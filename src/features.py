@@ -68,4 +68,5 @@ def run_all(df,columns):
     copy = email_domains_to_ints(copy)
     copy = party_in_description(copy)
     copy = pass_in_description(copy)
+    copy = dummify(df, ['email_numeric', 'pass_description', 'party_in_description', 'currency_to_dollars', 'name_all_caps']
     return copy
