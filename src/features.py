@@ -35,8 +35,30 @@ def dummify(df, cols, constant_and_drop=False):
 def currency_to_dollars(df):
     '''new column of booleans if currency == US Dollar'''
     df['currency_dollars'] = map(lambda x: 'USD' in x, df.currency)
+    
+    df.drop('currency', axis=1, inplace=True)
+
+def name_all_caps(df):
+   '''new column of whether or not name of even is in all caps'''
+   df['name_all_caps'] = map(lambda x: x==x.upper(), df.name)
  
 def email_domains_to_ints(df):
     '''new colum that converts gmail, hotmail & yahoo domains to 1, others to 0s'''
     df['email_numeric'] = map(lambda x: ('hotmail.com' in x) or ('gmail.com' in x) or ('yahoo.com' in x), df.email_domain)
     df['email_numeric'] = df['email_numeric'].astype(int)
+    df.drop('email_domain', axis=1, inplace=True)
+
+def party_in_description(df):
+   '''contains the fraud-likely word "party" in the description text'''
+   df['party_in_description'] = map(lambda x: 'party' in x.lower(), df.description)
+def pass_in_description(df):
+   '''contains the fraud-likely word "pass" in the description text'''
+   df['pass_description'] = map(lambda x: 'pass' in x.lower(), df.description)
+
+def run_all(df):
+    currency_to_dollars(df)
+    name_all_caps(df)
+    email_domains_to_ints(df)
+    party_in_description(df)
+    pass_in_description(df)
+    return df

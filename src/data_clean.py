@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-
 class DataCleaning(object):
 
     def __init__(self, df=None):
@@ -23,18 +22,20 @@ class DataCleaning(object):
     def create_y(self):
         self.df['fraud'] = map(lambda x: 'fraud' in x, self.df.acct_type)
 
-    def prepare_data(self):
+    def prepare_data(self,train=False):
         '''
         Run general cleaning steps on DataFrame, return X and y
         '''
         self.create_y()
         self.convert_dates()
-        y = self.df.pop('fraud')
-        X = self.df
-        return X,y
-
-    def save_clean_json(self, path):
-        self.df.to_json(path)
+        if train:
+            y = self.df.pop('fraud')
+            X = self.df
+            return X,y
+        return self.df
+    #
+    # def save_clean_json(self, path):
+    #     self.df.to_json(path)
 
 
 

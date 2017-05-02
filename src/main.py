@@ -5,6 +5,17 @@ from data_clean import DataCleaning
 import features as features
 reload (features)
 
+def clean_all(data_clean_object,train = False,logistic=False):
+    if train:
+        X, y = data_clean_object.prepare_data(train=train)
+    else:
+        X = data_clean_object.prepare_data(train=train)
+    column_list = ['body_length','currency',
+                    'description','email_domain','event_created',
+                    'event_end','event_published', 'user_created',
+                    'name','num_order','num_payouts','has_logo',
+                    'org_desc']
+
 if __name__ == "__main__":
 
     df = pd.read_json("data/raw/data.json")
