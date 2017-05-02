@@ -15,16 +15,19 @@ def clean_all(data_clean_object,train = False,logistic=False):
                     'event_end','event_published', 'user_created',
                     'name','num_order','num_payouts','has_logo',
                     'org_desc']
+    X = features.run_all(X,column_list)
+    if train:
+        return X,y
+    return X
 
 if __name__ == "__main__":
 
     df = pd.read_json("data/raw/data.json")
     X_train, X_test = train_test_split(df,test_size = 0.2, random_state = 1)
     dc = DataCleaning(X_train)
-    X, y = dc.prepare_data()
-    X = features.minimal_df(X,['country','description'])
-
-
+    # X, y = dc.prepare_data()
+    # X = features.minimal_df(X,['country','description'])
+    X,y = clean_all(dc,train=True)
 
     # dc.create_y()
     #
