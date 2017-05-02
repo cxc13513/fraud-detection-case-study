@@ -5,4 +5,4 @@ Team members:
  - Eliot Logan
  - Catherine Chen
  - Mark Llorente
- 
+ - Dmytro Kovalchuk
