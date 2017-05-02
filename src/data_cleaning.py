@@ -23,6 +23,11 @@ class DataCleaning(object):
     def save_clean_json(self, path):
         self.df.to_json(path)
 
+    def email_domains_to_ints():
+        '''new colum that converts gmail, hotmail & yahoo domains to 1, others to 0s'''
+        df['email_numeric'] = map(lambda x: ('hotmail.com' in x) or ('gmail.com' in x) or ('yahoo.com' in x), df.email_domain)
+        df['email_numeric'] = df['email_numeric'].astype(int)
+
 if __name__ == "__main__":
 
     df = pd.read_json("data/raw/data.json")
@@ -32,5 +37,7 @@ if __name__ == "__main__":
     dc.create_y()
 
     dc.convert_dates()
+
+    dc.email_domains_to_ints()
 
     dc.save_clean_json("data/processed/clean_data.json")
