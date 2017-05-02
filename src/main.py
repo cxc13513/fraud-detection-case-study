@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from data_clean import DataCleaning
 import features as features
+reload (features)
 
 if __name__ == "__main__":
 

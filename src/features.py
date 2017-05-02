@@ -31,3 +31,8 @@ def dummify(df, cols, constant_and_drop=False):
         const = np.full(len(df), 1)
         df['constant'] = const
     return df
+
+def email_domains_to_ints(df):
+    '''new colum that converts gmail, hotmail & yahoo domains to 1, others to 0s'''
+    df['email_numeric'] = map(lambda x: ('hotmail.com' in x) or ('gmail.com' in x) or ('yahoo.com' in x), df.email_domain)
+    df['email_numeric'] = df['email_numeric'].astype(int)
