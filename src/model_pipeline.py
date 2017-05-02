@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from sklearn import ensemble
 from sklearn import linear_model
 from sklearn import metrics
@@ -73,5 +74,22 @@ class ModelPipeline(object):
                                  cv=5, scoring='f1_macro')
         return(zip(model_sequence, scores))
 
-    def parameter_tuning(self, df, ylabel):
-        pass
+    def rmsle(y_hat, y):
+        target = y
+        predictions = y_hat
+        log_diff = np.log(predictions+1) - np.log(target+1)
+        rmsle_raw = np.sqrt(np.mean(log_diff**2))
+        rmsle_scorer = make_scorer(rmsle_raw, greater_is_better=False)
+        return rmsle_scorer
+
+    def parameter_tuning(pipeline, params, train_x, train_y):
+        gscv = GridSearchCV(pipeline,
+                            params,
+                            n_jobs=-1,
+                            verbose=True,
+                            scoring=rmsle_scorer
+                            )
+        clf = gscv.fit(train_x, train_y)
+        best_params = clf.best_params_
+        best_rmsle = clf.best_score_
+        return best_params, best_rmsle
