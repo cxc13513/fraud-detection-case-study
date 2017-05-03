@@ -44,20 +44,28 @@ class ModelPipeline(object):
         '''
         # set models to run in pipeline
         sgd = linear_model.SGDClassifier(loss="log")
-        svm = LinearSVC()
+        svc = LinearSVC()
         randomforest = ensemble.RandomForestClassifier()
+        adaboost = ensemble.AdaBoostClassifier()
         # save down sequence of models to run for future reference
-        model_sequence = ['sgd', 'svm', 'randomforest']
+        model_sequence = ['sgd', 'svm', 'randomforest', 'adaboost']
         # define a pipeline
         pipe = Pipeline([('sgd', sgd),
-                        ('svm', svm),
-                        ('randomforest', randomforest)])
+                        ('svc', svc),
+                        ('randomforest', randomforest),
+                        ('adaboost', adaboost)])
         # fit models with train set
         pipe.fit_transform(self.X, self.y)
-        scores = cross_val_score(pipe, self.X, self.y,
-                                 cv=5, scoring='f1_macro')
-        results = zip(model_sequence, scores)
-        return(results)
+        f1scores = cross_val_score(pipe, self.X, self.y,
+                                   cv=5, scoring='f1_weighted')
+        f1results = zip(model_sequence, f1scores)
+        recallscores = cross_val_score(pipe, self.X, self.y,
+                                       cv=5, scoring='recall_weighted')
+        recallresults = zip(model_sequence, recallscores)
+        precisionscores = cross_val_score(pipe, self.X, self.y,
+                                          cv=5, scoring='precision_weighted')
+        precisionresults = zip(model_sequence, precisionscores)
+        return(f1results, recallresults, precisionresults)
 
     def rmsle(self, y_hat):
         target = self.y
@@ -68,13 +76,34 @@ class ModelPipeline(object):
         return(rmsle_scorer)
 
     def parameter_tuning(self, pipeline, params):
+        # set models to run in pipeline
+        sgd = linear_model.SGDClassifier(loss='log',
+                                         learning_rate='optimal', penalty='l1')
+        svc = LinearSVC()
+        randomforest = ensemble.RandomForestClassifier()
+        adaboost = ensemble.AdaBoostClassifier()
+        pipeline = Pipeline([('sgd', sgd),
+                            ('svc', svc),
+                            ('randomforest', randomforest),
+                            ('adaboost', adaboost)])
+        params = dict(sgd__alpha=[0.0001, 0.001, 0.01],
+                      svc__kernel=['linear'],
+                      svc__C=[1, 10],
+                      svc__gamma=[0.001, 0.0001],
+                      randomforest__n_estimators=[150, 300, 450],
+                      randomforest__max_depth=[1, 3, None],
+                      randomforest__max_features=['auto', 'None', 'log2'],
+                      adaboost__n_estimators=[50, 100, 150],
+                      adaboost__learning_rate=[0.5, 0.75, 1.0]
+                      )
+
         gscv = GridSearchCV(pipeline,
                             params,
                             n_jobs=-1,
                             verbose=True,
                             scoring=self.rmsle_scorer
                             )
-        clf = gscv.fit(self.X, self.y)
+        clf = gscv.fit_transform(self.X, self.y)
         best_params = clf.best_params_
         best_rmsle = clf.best_score_
         return(best_params, best_rmsle)
