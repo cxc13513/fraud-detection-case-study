@@ -1,3 +1,4 @@
 data/raw/*
 data/processed/clean_data.json
-dk_crap
+dk_crap/*
+*.pyc
