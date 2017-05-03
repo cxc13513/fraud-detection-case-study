@@ -41,6 +41,7 @@ def currency_to_dollars(df):
 def name_all_caps(df):
    '''new column of whether or not name of even is in all caps'''
    df['name_all_caps'] = map(lambda x: x==x.upper(), df.name)
+   df = df.drop('name', axis=1)
    return df
 
 def email_domains_to_ints(df):
@@ -69,5 +70,5 @@ def run_all(df,columns):
     copy = email_domains_to_ints(copy)
     copy = party_in_description(copy)
     copy = pass_in_description(copy)
-    copy = dummify(copy, ['email_numeric', 'pass_description', 'party_in_description', 'currency_dollars', 'name_all_caps'])
+    copy = dummify(copy, ['email_numeric', 'pass_description', 'party_in_description', 'currency_dollars', 'name_all_caps','has_logo'])
     return copy
