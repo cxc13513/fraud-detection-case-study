@@ -9,11 +9,12 @@ reload (features)
 
 def clean_all(data_clean_object,train = False,logistic=False):
     if train:
+
         X, y = data_clean_object.prepare_data(train=train)
     else:
         X = data_clean_object.prepare_data(train=train)
     column_list = ['body_length','currency',
-                    'email_domain','name','num_order','num_payouts','has_logo']
+                    'email_domain','name','num_order','num_payouts','has_logo','event_created','user_created','country','user_age']
     # column_list = ['body_length','currency',
     #                 'description','email_domain','event_created',
     #                 'event_end','event_published', 'user_created',
@@ -32,8 +33,8 @@ if __name__ == "__main__":
     X,y = clean_all(dc,train=True)
     #add logistics
     model_pipeline_object = ModelPipeline(X,y)
-    base_scores = model_pipeline_object.get_baseline_scores(X,y)
+    base_scores = model_pipeline_object.get_baseline_scores()
 
-    fitted_models = model_pipeline_object.get_othermodels_scores(X,y)
+    fitted_models = model_pipeline_object.get_othermodels_scores()
 
     # dc.save_clean_json("data/processed/clean_data.json")

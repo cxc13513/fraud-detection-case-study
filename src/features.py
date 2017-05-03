@@ -59,7 +59,13 @@ def party_in_description(df):
 def pass_in_description(df):
    '''contains the fraud-likely word "pass" in the description text'''
    df['pass_description'] = map(lambda x: 'pass' in x.lower(), df.description)
+   df = df.drop('description', axis=1)
    return df
+
+def time_between_user_event_created(df):
+  df['time_between_user_event_created'] = (df.event_created - df.user_created).dt.days
+  df = df.drop(['user_created','event_created'], axis=1)
+  return df
 
 def run_all(df,columns):
     copy = df.copy()
@@ -68,7 +74,9 @@ def run_all(df,columns):
     # import pdb; pdb.set_trace()
     copy = name_all_caps(copy)
     copy = email_domains_to_ints(copy)
-    copy = party_in_description(copy)
-    copy = pass_in_description(copy)
-    copy = dummify(copy, ['email_numeric', 'pass_description', 'party_in_description', 'currency_dollars', 'name_all_caps','has_logo'])
+    # copy = party_in_description(copy)
+    # copy = pass_in_description(copy)
+    copy = time_between_user_event_created(copy)
+    copy = dummify(copy, ['email_numeric','currency_dollars', 'name_all_caps','has_logo','country'])
+    # copy = dummify(copy, ['email_numeric', 'pass_description', 'party_in_description', 'currency_dollars', 'name_all_caps','has_logo','country'])
     return copy

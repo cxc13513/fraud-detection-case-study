@@ -22,12 +22,18 @@ class DataCleaning(object):
     def create_y(self):
         self.df['fraud'] = map(lambda x: 'fraud' in x, self.df.acct_type)
 
+    def undersample(self):
+        df_non_fraud = self.df[self.df.fraud == False]
+        undersampled_indices = np.random.choice(np.array(df_non_fraud.index),int(0.5*len(df_non_fraud)))
+        self.df = self.df.drop(undersampled_indices)
+
     def prepare_data(self,train=False):
         '''
         Run general cleaning steps on DataFrame, return X and y
         '''
         self.create_y()
         self.convert_dates()
+        self.undersample()
         if train:
             y = self.df.pop('fraud')
             X = self.df
