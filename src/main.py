@@ -41,6 +41,6 @@ if __name__ == "__main__":
     y_small = y[:50]
 
     model_pipeline_object = ModelPipeline(X_small,y_small)
-    params_tune = model_pipeline_object.parameter_tuning(X_small, y_small)
+    best_model, best_params, best_recall_score = model_pipeline_object.parameter_tuning(X_small, y_small)
 
     # dc.save_clean_json("data/processed/clean_data.json")
