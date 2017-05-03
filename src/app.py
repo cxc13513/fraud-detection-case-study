@@ -1,5 +1,6 @@
 import json
 import sched, time
+from predict import Predict
 
 
 from db_connect import DBConnector
@@ -31,8 +32,8 @@ def score():
 
     d = requests.get(url).json()
     X = pd.DataFrame.from_dict(d, orient='index').T
-    # y = model.predict(X)
-    y = True
+    y = predict.predict(X)
+    # y = True
 
     db.save_to_db(X,y)
     return render_template('/show_json.html', table=X.to_html())
@@ -70,9 +71,13 @@ if __name__ == '__main__':
     url = "http://galvanize-case-study-on-fraud.herokuapp.com/data_point"
 
     db = DBConnector()
+    model =
 
     # s = sched.scheduler(time.time, time.sleep)
     # s.enter(60, 1, load_data, (s,))
     # s.run()
+    with open('random_forest.pkl') as f:
+        model = pickle.load(f)
+    predict = Predict(model)
 
     app.run(host='0.0.0.0', port=8080, debug=True)
