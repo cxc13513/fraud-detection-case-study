@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  <p>{{ table|safe }}</a>
+
+  <form action="/score">
+    <input type="submit" value="Load Data">
+    <input type="button" onclick="location.href='/dashboard';" value="Go to Dashboard" />
+  </form>
+
+
+{% endblock %}

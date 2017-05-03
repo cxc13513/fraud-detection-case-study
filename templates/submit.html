@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  <form action="/predict" method="post">
+    Your input:<br>
+    <textarea rows="4" cols="50" name="body"></textarea><br>
+    <input type="submit" value="Submit">
+  </form>
+
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    {{ table|safe }}
+
+    <input type="button" onclick="location.href='/score';" value="Go to Score" />
+
+{% endblock %}
