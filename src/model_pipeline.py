@@ -1,18 +1,17 @@
-import pandas as pd
-from main import clean_all
 import numpy as np
 from sklearn import ensemble
+from sklearn.grid_search import GridSearchCV
 from sklearn import linear_model
 from sklearn import metrics
+from sklearn.metrics import make_scorer
 from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn import svm
 
 
 class ModelPipeline(object):
 
-    def __init__(self, X, y):
+    def __init__(self, X=None, y=None):
         self.X = X
         self.y = y
 
@@ -22,8 +21,8 @@ class ModelPipeline(object):
         outputs: list of baseline scores (precision, recall, f1)
         '''
         y_true = y
-        df['yhat_baseline'] = 1
-        y_pred = df['yhat_baseline']
+        X['yhat_baseline'] = 1
+        y_pred = X['yhat_baseline']
         baseline_precision = metrics.precision_score(y_true, y_pred)
         baseline_recall = metrics.recall_score(y_true, y_pred)
         baseline_f1 = metrics.f1_score(y_true, y_pred)
@@ -57,9 +56,10 @@ class ModelPipeline(object):
         pipe.fit(X, y)
         scores = cross_val_score(pipe, X, y,
                                  cv=5, scoring='f1_macro')
-        return(zip(model_sequence, scores))
+        results = zip(model_sequence, scores)
+        return results
 
-    def rmsle(y_hat, y):
+    def rmsle(self, y_hat, y):
         target = y
         predictions = y_hat
         log_diff = np.log(predictions+1) - np.log(target+1)
@@ -67,14 +67,14 @@ class ModelPipeline(object):
         rmsle_scorer = make_scorer(rmsle_raw, greater_is_better=False)
         return rmsle_scorer
 
-    def parameter_tuning(pipeline, params, train_x, train_y):
+    def parameter_tuning(self, pipeline, params, X, y):
         gscv = GridSearchCV(pipeline,
                             params,
                             n_jobs=-1,
                             verbose=True,
-                            scoring=rmsle_scorer
+                            scoring=self.rmsle_scorer
                             )
-        clf = gscv.fit(train_x, train_y)
+        clf = gscv.fit(X, y)
         best_params = clf.best_params_
         best_rmsle = clf.best_score_
         return best_params, best_rmsle
