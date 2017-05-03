@@ -27,6 +27,7 @@ Description classifier
 - accuracy:  .92
 - precision: .89
 - recall:    .2
+- F1 = .33
 - dumps into pickle
 
 Pipeline Class:
