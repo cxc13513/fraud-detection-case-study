@@ -1,9 +1,7 @@
-import numpy as np
 from sklearn import ensemble
 from sklearn.grid_search import GridSearchCV
 from sklearn import linear_model
 from sklearn import metrics
-from sklearn.metrics import make_scorer
 from sklearn.model_selection import cross_val_score
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
@@ -71,14 +69,6 @@ class ModelPipeline(object):
                "recall:", recallresults,
                "precision:", precisionresults)
 
-    def rmsle(self, y_hat):
-        target = self.y
-        predictions = y_hat
-        log_diff = np.log(predictions+1) - np.log(target+1)
-        rmsle_raw = np.sqrt(np.mean(log_diff**2))
-        rmsle_scorer = make_scorer(rmsle_raw, greater_is_better=False)
-        return(rmsle_scorer)
-
     def parameter_tuning(self, pipeline, params):
         # set models to run in pipeline
         sgd = linear_model.SGDClassifier(loss='log',
@@ -91,20 +81,21 @@ class ModelPipeline(object):
                             ('randomforest', randomforest),
                             ('adaboost', adaboost)])
         params = dict(sgd__alpha=[0.0001, 0.001, 0.01],
-                      svc__kernel=['linear'],
                       svc__C=[1, 10],
-                      svc__gamma=[0.001, 0.0001],
                       randomforest__n_estimators=[150, 300, 450],
                       randomforest__max_depth=[1, 3, None],
-                      randomforest__max_features=['auto', 'None', 'log2'],
+                      randomforest__max_features=['auto', 'sqrt', 'log2'],
                       adaboost__n_estimators=[50, 100, 150],
                       adaboost__learning_rate=[0.5, 0.75, 1.0])
         gscv = GridSearchCV(pipeline,
                             params,
                             n_jobs=-1,
                             verbose=True,
-                            scoring=self.rmsle_scorer)
-        clf = gscv.fit(self.X, self.y)
-        best_params = clf.best_params_
-        best_rmsle = clf.best_score_
-        return(best_params, best_rmsle)
+                            cv=3,
+                            scoring='recall_weighted')
+        gscv.fit(self.X, self.y)
+        best_model = gscv.best_estimator_
+        best_params = gscv.best_params_
+        best_rmsle = gscv.best_score_
+        return("best model:", best_model, "best params:", best_params,
+               "best rmse:", best_rmsle)

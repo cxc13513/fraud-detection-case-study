@@ -37,4 +37,10 @@ if __name__ == "__main__":
 
     fitted_models = model_pipeline_object.get_othermodels_scores()
 
+    X_small = X[:50:]
+    y_small = y[:50]
+
+    model_pipeline_object = ModelPipeline(X_small,y_small)
+    params_tune = model_pipeline_object.parameter_tuning(X_small, y_small)
+
     # dc.save_clean_json("data/processed/clean_data.json")
