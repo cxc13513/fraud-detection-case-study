@@ -1,4 +1,5 @@
 import pandas as pd
+from main import clean_all
 import numpy as np
 from sklearn import ensemble
 from sklearn import linear_model
@@ -11,15 +12,16 @@ from sklearn import svm
 
 class ModelPipeline(object):
 
-    def __init__(self, df=None):
-        self.df = df
+    def __init__(self, X, y):
+        self.X = X
+        self.y = y
 
-    def get_baseline_scores(self, df, ylabel):
+    def get_baseline_scores(self, X, y):
         '''
         inputs: cleaned/engineered df and ylabel name
         outputs: list of baseline scores (precision, recall, f1)
         '''
-        y_true = df[ylabel]
+        y_true = y
         df['yhat_baseline'] = 1
         y_pred = df['yhat_baseline']
         baseline_precision = metrics.precision_score(y_true, y_pred)
@@ -29,7 +31,7 @@ class ModelPipeline(object):
                ('baseline_recall', baseline_recall),
                ('baseline_f1', baseline_f1)])
 
-    def run_logistic_separately(self, df, list_vars_to_drop, ylabel):
+    def run_logistic_separately(self, X, list_vars_to_drop, y):
         for item in list_vars_to_drop:
             df.pop(item)
         df_logistic = df
@@ -39,19 +41,11 @@ class ModelPipeline(object):
                                                             random_state=42)
         logistic = linear_model.LogisticRegression(penalty='l1')
         logistic.fit(X_train, y_train)
-        log_score = cross_val_score(logistic, X_train, y_train,
+        log_score = cross_val_score(logistic, X, y,
                                     cv=5, scoring='f1_macro')
         return(zip('logistic', log_score))
 
-    def split_df(self, df, ylabel):
-        # create X, y, then do train_test_split
-        y = df.pop(ylabel)
-        X = df
-        X_train, X_test, y_train, y_test = train_test_split(X, y,
-                                                            random_state=42)
-        return X_train, X_test, y_train, y_test
-
-    def get_othermodels_scores(self, df, ylabel):
+    def get_othermodels_scores(self, X, y):
         '''
         input: cleaned/engineered df
         output: return f1_macro scores from models
@@ -66,11 +60,9 @@ class ModelPipeline(object):
         pipe = Pipeline([('sgd', sgd),
                         ('svm', svm),
                         ('randomforest', randomforest)])
-        # call in split df
-        X_train, X_test, y_train, y_test = self.split_df(df, ylabel)
         # fit models with train set
-        pipe.fit(X_train, y_train)
-        scores = cross_val_score(pipe, X_train, y_train,
+        pipe.fit(X, y)
+        scores = cross_val_score(pipe, X, y,
                                  cv=5, scoring='f1_macro')
         return(zip(model_sequence, scores))
 
