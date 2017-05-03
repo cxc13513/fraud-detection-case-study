@@ -1,13 +1,6 @@
 import pandas as pd
 import numpy as np
 
-def impute_vals(df,col_name,val):
-    '''
-    Impute defined value val into col_name. Operates over one column at a time
-    To run outside of class
-    '''
-    df[col_name] = df[col_name].fillna(val)
-    return df
 
 def minimal_df(df,col_names, to_drop = False):
     '''
@@ -67,7 +60,9 @@ def time_between_user_event_created(df):
   df = df.drop(['user_created','event_created'], axis=1)
   return df
 
-def run_all(df,columns):
+def run_all(df,logistic=False):
+    columns = ['body_length','currency',
+                    'email_domain','name','num_order','num_payouts','has_logo','event_created','user_created','country','user_age']
     copy = df.copy()
     copy = minimal_df(copy,columns)
     copy = currency_to_dollars(copy)
@@ -77,6 +72,6 @@ def run_all(df,columns):
     # copy = party_in_description(copy)
     # copy = pass_in_description(copy)
     copy = time_between_user_event_created(copy)
-    copy = dummify(copy, ['email_numeric','currency_dollars', 'name_all_caps','has_logo','country'])
+    copy = dummify(copy, ['email_numeric','currency_dollars', 'name_all_caps','has_logo','country'],constant_and_drop=logistic)
     # copy = dummify(copy, ['email_numeric', 'pass_description', 'party_in_description', 'currency_dollars', 'name_all_caps','has_logo','country'])
     return copy
