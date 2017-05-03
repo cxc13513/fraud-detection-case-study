@@ -6,10 +6,10 @@ import cPickle as pickle
 
 class Predict(object):
 
-    def __init__(self,raw_data,model):
-        self.X = raw_data
-        # with open(model) as f:
-        #     self.model = pickle.load(f)
+    def __init__(self,model):
+        # self.X = raw_data
+        # # with open(model) as f:
+        # #     self.model = pickle.load(f)
         self.model = model
 
     def clean_data(self):
@@ -19,7 +19,7 @@ class Predict(object):
         X = run_all(self.df,logistic=self.logistic)
         return X
 
-    def predict(self):
+    def predict(self,raw_data):
         self.clean_data()
         self.featurize()
         prediction = self.model.predict_proba(self.X)
@@ -29,4 +29,5 @@ if __name__=="__main__":
     df = pd.read_csv('data/raw/data.json')
     with open('~/Downloads/random_forest.pkl') as f:
         model = pickle.load(f)
-    predictions = Predict(df,model)
+    predict = Predict(model)
+    prediction = predict.predict(df)
