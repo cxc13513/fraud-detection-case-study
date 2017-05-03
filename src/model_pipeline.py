@@ -97,5 +97,4 @@ class ModelPipeline(object):
         best_model = gscv.best_estimator_
         best_params = gscv.best_params_
         best_recall_score = gscv.best_score_
-        return("best model:", best_model, "best params:", best_params,
-               "best rmse:", best_recall_score)
+        return best_model, best_params, best_recall_score)
