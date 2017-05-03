@@ -35,7 +35,7 @@ def dummify(df, cols, constant_and_drop=False):
 def currency_to_dollars(df):
     '''new column of booleans if currency == US Dollar'''
     df['currency_dollars'] = map(lambda x: 'USD' in x, df.currency)
-    df.drop('currency', axis=1, inplace=True)
+    df = df.drop('currency', axis=1)
     return df
 
 def name_all_caps(df):
@@ -47,7 +47,7 @@ def email_domains_to_ints(df):
     '''new colum that converts gmail, hotmail & yahoo domains to 1, others to 0s'''
     df['email_numeric'] = map(lambda x: ('hotmail.com' in x) or ('gmail.com' in x) or ('yahoo.com' in x), df.email_domain)
     df['email_numeric'] = df['email_numeric'].astype(int)
-    df.drop('email_domain', axis=1, inplace=True)
+    df = df.drop('email_domain', axis=1)
     return df
 
 def party_in_description(df):
@@ -64,9 +64,10 @@ def run_all(df,columns):
     copy = df.copy()
     copy = minimal_df(copy,columns)
     copy = currency_to_dollars(copy)
+    # import pdb; pdb.set_trace()
     copy = name_all_caps(copy)
     copy = email_domains_to_ints(copy)
     copy = party_in_description(copy)
     copy = pass_in_description(copy)
-    copy = dummify(df, ['email_numeric', 'pass_description', 'party_in_description', 'currency_to_dollars', 'name_all_caps']
+    copy = dummify(copy, ['email_numeric', 'pass_description', 'party_in_description', 'currency_dollars', 'name_all_caps'])
     return copy
