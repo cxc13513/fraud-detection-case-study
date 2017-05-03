@@ -16,7 +16,8 @@ class ModelPipeline(object):
         self.y = y
 
     def get_baseline_scores(self):
-        '''
+        '''Calculate baseline scores.
+
         inputs: cleaned/engineered df and ylabel name
         outputs: list of baseline scores (precision, recall, f1)
         '''
@@ -38,7 +39,8 @@ class ModelPipeline(object):
         return(zip('logistic', log_score))
 
     def get_othermodels_scores(self):
-        '''
+        '''Calculate scores for all modesl except Logisitic.
+
         input: cleaned/engineered df
         output: return f1_macro scores from models
         '''
@@ -55,7 +57,7 @@ class ModelPipeline(object):
                         ('randomforest', randomforest),
                         ('adaboost', adaboost)])
         # fit models with train set
-        pipe.fit_transform(self.X, self.y)
+        pipe.fit(self.X, self.y)
         f1scores = cross_val_score(pipe, self.X, self.y,
                                    cv=5, scoring='f1_weighted')
         f1results = zip(model_sequence, f1scores)
@@ -65,7 +67,9 @@ class ModelPipeline(object):
         precisionscores = cross_val_score(pipe, self.X, self.y,
                                           cv=5, scoring='precision_weighted')
         precisionresults = zip(model_sequence, precisionscores)
-        return(f1results, recallresults, precisionresults)
+        return("f1:", f1results,
+               "recall:", recallresults,
+               "precision:", precisionresults)
 
     def rmsle(self, y_hat):
         target = self.y
@@ -94,16 +98,13 @@ class ModelPipeline(object):
                       randomforest__max_depth=[1, 3, None],
                       randomforest__max_features=['auto', 'None', 'log2'],
                       adaboost__n_estimators=[50, 100, 150],
-                      adaboost__learning_rate=[0.5, 0.75, 1.0]
-                      )
-
+                      adaboost__learning_rate=[0.5, 0.75, 1.0])
         gscv = GridSearchCV(pipeline,
                             params,
                             n_jobs=-1,
                             verbose=True,
-                            scoring=self.rmsle_scorer
-                            )
-        clf = gscv.fit_transform(self.X, self.y)
+                            scoring=self.rmsle_scorer)
+        clf = gscv.fit(self.X, self.y)
         best_params = clf.best_params_
         best_rmsle = clf.best_score_
         return(best_params, best_rmsle)
