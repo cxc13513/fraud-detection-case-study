@@ -5,6 +5,7 @@ from sklearn import metrics
 from sklearn.model_selection import cross_val_score
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
+import cPickle as pickle
 
 
 class ModelPipeline(object):
@@ -92,7 +93,11 @@ class ModelPipeline(object):
         print("f1:", f1scores,
               "recall:", recallscores,
               "precision:", precisionscores)
-        return randomforest
+
+        # pickle randomforest fitted model and return that
+        with open('data/final_model.pkl', 'w') as f:
+            pickle.dump(randomforest, f)
+        return "pickled model saved in data/final_model.pkl"
 
     def parameter_tuning(self, pipeline, params):
         # set models to run in pipeline
