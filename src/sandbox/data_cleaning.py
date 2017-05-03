@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from sklearn.model_selection import train_test_split
 
 
 class DataCleaning(object):
@@ -8,6 +9,9 @@ class DataCleaning(object):
         self.df = df
 
     def convert_dates(self):
+        '''
+        Convert dates to Datetime format
+        '''
         date_fields = ['approx_payout_date',
                         'event_created',
                         'event_end',
@@ -19,31 +23,34 @@ class DataCleaning(object):
     def create_y(self):
         self.df['fraud'] = map(lambda x: 'fraud' in x, self.df.acct_type)
 
-    def make_pop_email(self):
-        self.df['pop_email'] = map(lambda x: 1 if x in ['hotmail.com', 'gmail.com','yahoo.com', 'aol.com'] else 0, self.df.email_domain)
+    def prepare_data(self):
+        '''
+        Run general cleaning steps on DataFrame, return X and y
+        '''
+        self.create_y()
+        self.convert_dates()
+        y = self.df.pop('fraud')
+        X = self.df
+        return X,y
 
     def save_clean_json(self, path):
         self.df.to_json(path)
 
-    def make_avg_ticket_price(self):
-        self.df['avg_ticket_price'] = [np.mean([y['cost'] for y in x]) for x in self.df.ticket_types]
-
-
+    def email_domains_to_ints():
+        '''new colum that converts gmail, hotmail & yahoo domains to 1, others to 0s'''
+        df['email_numeric'] = map(lambda x: ('hotmail.com' in x) or ('gmail.com' in x) or ('yahoo.com' in x), df.email_domain)
+        df['email_numeric'] = df['email_numeric'].astype(int)
 
 if __name__ == "__main__":
 
-    # read raw json data
     df = pd.read_json("data/raw/data.json")
 
-    # init DataCleaning class
     dc = DataCleaning(df)
 
-    # clanining steps
+    dc.create_y()
+
     dc.convert_dates()
 
-    # make features
-    dc.make_pop_email()
+    dc.email_domains_to_ints()
 
-    # create y labels and save the clean file
-    dc.create_y()
     dc.save_clean_json("data/processed/clean_data.json")
