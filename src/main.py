@@ -25,6 +25,13 @@ def clean_all(data_clean_object,train = False,logistic=False):
         return X,y
     return X
 
+def load_train(path):
+    pass
+
+def fit_train(X,y):
+    pass
+
+
 if __name__ == "__main__":
 
     df = pd.read_json("data/raw/data.json")
@@ -40,7 +47,7 @@ if __name__ == "__main__":
     X_small = X[:50:]
     y_small = y[:50]
 
-    model_pipeline_object = ModelPipeline(X_small,y_small)
-    best_model, best_params, best_recall_score = model_pipeline_object.parameter_tuning(X_small, y_small)
+    model_pipeline_object = ModelPipeline(X,y)
+    best_model, best_params, best_recall_score = model_pipeline_object.parameter_tuning(X, y)
 
     # dc.save_clean_json("data/processed/clean_data.json")
