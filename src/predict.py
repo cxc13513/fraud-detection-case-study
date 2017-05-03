@@ -2,7 +2,7 @@ import pandas as pd
 from data_clean import DataCleaning
 from features import run_all
 from model_pipeline import ModelPipeline
-# import pickle
+import cPickle as pickle
 
 class Predict(object):
 
@@ -24,3 +24,9 @@ class Predict(object):
         self.featurize()
         prediction = self.model.predict_proba(self.X)
         return prediction
+
+if __name__=="__main__":
+    df = pd.read_csv('data/raw/data.json')
+    with open('~/Downloads/random_forest.pkl') as f:
+        model = pickle.load(f)
+    predictions = Predict(df,model)
