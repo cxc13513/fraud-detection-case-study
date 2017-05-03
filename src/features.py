@@ -62,7 +62,9 @@ def time_between_user_event_created(df):
 
 def run_all(df,logistic=False):
     columns = ['body_length','currency',
-                    'email_domain','name','num_order','num_payouts','has_logo','event_created','user_created','country','user_age']
+                    'email_domain','name','num_order','num_payouts','has_logo','country','user_age']
+    # columns = ['body_length','currency',
+    #                 'email_domain','name','num_order','num_payouts','has_logo','event_created','user_created','country','user_age']
     copy = df.copy()
     copy = minimal_df(copy,columns)
     copy = currency_to_dollars(copy)
@@ -71,7 +73,7 @@ def run_all(df,logistic=False):
     copy = email_domains_to_ints(copy)
     # copy = party_in_description(copy)
     # copy = pass_in_description(copy)
-    copy = time_between_user_event_created(copy)
+    # copy = time_between_user_event_created(copy)
     copy = dummify(copy, ['email_numeric','currency_dollars', 'name_all_caps','has_logo','country'],constant_and_drop=logistic)
     # copy = dummify(copy, ['email_numeric', 'pass_description', 'party_in_description', 'currency_dollars', 'name_all_caps','has_logo','country'])
     return copy

@@ -23,10 +23,10 @@ def get_fitted_model(X, y):
                                       scoring='precision_weighted')
     print("f1:", f1scores, "recall:", recallscores, "precision:", precisionscores)
     return randomforest
-
-df = pd.read_json('data/raw/data.json')
-X_all, y_all = PrepareTrain(df, undersample=False).prepare_data()
-final_model_fitted = get_fitted_model(X_all, y_all)
+#
+# df = pd.read_json('data/raw/data.json')
+# X_all, y_all = PrepareTrain(df, undersample=False).prepare_data()
+# final_model_fitted = get_fitted_model(X_all, y_all)
 
 
 

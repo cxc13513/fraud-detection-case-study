@@ -34,7 +34,7 @@ class PrepareTrain(object):
         '''
         Run general cleaning steps on DataFrame, return X and y
         '''
-        self.clean_train()
+        # self.clean_train()
         self.create_y()
         if self.undersample_condition:
             self.undersample()
