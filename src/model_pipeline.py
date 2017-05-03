@@ -31,16 +31,9 @@ class ModelPipeline(object):
                ('baseline_recall', baseline_recall),
                ('baseline_f1', baseline_f1)])
 
-    def run_logistic_separately(self, X, list_vars_to_drop, y):
-        for item in list_vars_to_drop:
-            df.pop(item)
-        df_logistic = df
-        y = df_logistic.pop(ylabel)
-        X = df_logistic
-        X_train, X_test, y_train, y_test = train_test_split(X, y,
-                                                            random_state=42)
+    def run_logistic_separately(self, X, y):
         logistic = linear_model.LogisticRegression(penalty='l1')
-        logistic.fit(X_train, y_train)
+        logistic.fit(X, y)
         log_score = cross_val_score(logistic, X, y,
                                     cv=5, scoring='f1_macro')
         return(zip('logistic', log_score))
