@@ -1,5 +1,7 @@
 #Fraud detection case study
 
+Presentation link: https://docs.google.com/presentation/d/1ysho24cQ_N6M8hqZh_97WahK1PdsEzYAo-8e6rZMrOo/edit#slide=id.p
+
 Team members:
 
  - Rita Golovonevsky
