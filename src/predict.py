@@ -1,47 +1,37 @@
-import cPickle as pickle
 import pandas as pd
-import numpy as np
-
-from db_connect import DBConnector
 from data_clean import DataCleaning
-import features as features
+from features import run_all
 from model_pipeline import ModelPipeline
+import cPickle as pickle
+from train_prepare import PrepareTrain
+from sklearn import ensemble
+from sklearn.model_selection import cross_val_score
+from train2 import get_fitted_model
 
+class Predict(object):
 
-def clean_all(data_clean_object,train = False,logistic=False):
-    if train:
+    def __init__(self,model):
+        # self.X = raw_data
+        # # with open(model) as f:
+        # #     self.model = pickle.load(f)
+        self.model = model
 
-        X, y = data_clean_object.prepare_data(train=train)
-    else:
-        X = data_clean_object.prepare_data(train=train)
-    column_list = ['body_length','currency',
-                    'email_domain','name','num_order','num_payouts','has_logo',
-                    'event_created','user_created','country','user_age']
-    # column_list = ['body_length','currency',
-    #                 'description','email_domain','event_created',
-    #                 'event_end','event_published', 'user_created',
-    #                 'name','num_order','num_payouts','has_logo',
-    #                 'org_desc']
-    X = features.run_all(X,column_list)
-    if train:
-        return X,y
-    return X
+    def clean_data(self,data):
+        return DataCleaning(data).convert_dates()
 
-if __name__ == "__main__":
+    def featurize(self,data):
+        X = run_all(data)
+        return X
 
-    # df = pd.read_json("data/raw/example.json")
+    def predict(self,raw_data):
+        # X = self.clean_data(raw_data)
+        X = self.featurize(raw_data)
+        prediction = self.model.predict_proba(X)
+        return prediction
 
-    df = pd.read_json("data/raw/data.json")
-    X = df.sample(n=1)
-
-    dc = DataCleaning(X)
-    X,y = clean_all(dc,train=True)
-
-    with open("../data/model/model.pkl") as f:
-        model = pickle.load(f)
-
-    y = model.predict(X)
-
-    db = DBConnector()
-
-    db.save_to_db(X,y)
+if __name__=="__main__":
+    df = pd.read_json('data/raw/data.json')
+    X_all, y_all = PrepareTrain(df, undersample=False).prepare_data()
+    model = get_fitted_model(X_all, y_all)
+    predict = Predict(model)
+    prediction = predict.predict(df)

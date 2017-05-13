@@ -22,4 +22,4 @@ if __name__ == "__main__":
 
     db = DBConnector()
 
-    # db.save_to_db(df,True)
+    db.save_to_db(df,True)

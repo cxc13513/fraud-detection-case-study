@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1 class="page-header">
+        Prediction history
+    </h1>
+
+    {{ table|safe }}
+
+    <input type="button" onclick="location.href='/score';" value="Go to Score" />
+
+{% endblock %}

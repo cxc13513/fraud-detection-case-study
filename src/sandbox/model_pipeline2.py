@@ -5,7 +5,6 @@ from sklearn import metrics
 from sklearn.model_selection import cross_val_score
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
-import cPickle as pickle
 
 
 class ModelPipeline(object):
@@ -44,16 +43,12 @@ class ModelPipeline(object):
         output: return f1_macro scores from models
         '''
         # set models to run in pipeline
-        sgd = linear_model.SGDClassifier(loss="log", alpha=0.0001,
-                                         learning_rate='optimal')
-        svc = LinearSVC(C=1)
-        randomforest = ensemble.RandomForestClassifier(max_depth=1,
-                                                       max_features='auto',
-                                                       n_estimators=150)
-        adaboost = ensemble.AdaBoostClassifier(learning_rate=0.75,
-                                               n_estimators=50)
+        sgd = linear_model.SGDClassifier(loss="log")
+        svc = LinearSVC()
+        randomforest = ensemble.RandomForestClassifier()
+        adaboost = ensemble.AdaBoostClassifier()
         # save down sequence of models to run for future reference
-        model_sequence = ['sgd', 'svc', 'randomforest', 'adaboost']
+        model_sequence = ['sgd', 'svm', 'randomforest', 'adaboost']
         # define a pipeline
         pipe = Pipeline([('sgd', sgd),
                         ('svc', svc),
@@ -73,31 +68,6 @@ class ModelPipeline(object):
         return("f1:", f1results,
                "recall:", recallresults,
                "precision:", precisionresults)
-
-    def predict(self, X_test, y_test):
-        X_all_training = self.X.append(X_test, ignore_index=True)
-        y_all_training = self.y.append(y_test, ignore_index=True)
-        randomforest = ensemble.RandomForestClassifier(max_depth=1,
-                                                       max_features='auto',
-                                                       n_estimators=150)
-        randomforest.fit(X_all_training, y_all_training)
-        f1scores = cross_val_score(randomforest,
-                                   X_all_training, y_all_training,
-                                   cv=5, scoring='f1_weighted')
-        recallscores = cross_val_score(randomforest,
-                                       X_all_training, y_all_training,
-                                       cv=5, scoring='f1_weighted')
-        precisionscores = cross_val_score(randomforest, X_all_training,
-                                          y_all_training, cv=5,
-                                          scoring='f1_weighted')
-        print("f1:", f1scores,
-              "recall:", recallscores,
-              "precision:", precisionscores)
-
-        # pickle randomforest fitted model and return that
-        with open('data/final_model.pkl', 'w') as f:
-            pickle.dump(randomforest, f)
-        return "pickled model saved in data/final_model.pkl"
 
     def parameter_tuning(self, pipeline, params):
         # set models to run in pipeline

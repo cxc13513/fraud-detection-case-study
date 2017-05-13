@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  Predicted Section:<br>
+  <p>{{ y_label }}</p>
+  Your input:<br>
+  <p>{{ X }}</p>
+
+  Try again?<br>
+  <a href="/submit">Yes</a>/<a href="/">No</a>
+
+{% endblock %}
